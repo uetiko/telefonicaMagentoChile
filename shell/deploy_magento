@@ -1,0 +1,7 @@
+docker exec -i magento-phpfpm php -d memory_limit=-1 -f bin/magento indexer:reindex && 
+docker exec -i magento-phpfpm php -d memory_limit=-1 -f bin/magento setup:di:compile &&
+docker exec -i magento-phpfpm php -d memory_limit=-1 -f bin/magento setup:upgrade && 
+docker exec -i magento-phpfpm php -d memory_limit=-1 bin/magento setup:static-content:deploy --area frontend es_CL  -f && 
+docker exec -i magento-phpfpm php -d memory_limit=-1 bin/magento setup:static-content:deploy --area adminhtml es_CL -f && 
+docker exec -i magento-phpfpm php bin/magento c:c && 
+docker exec -i magento-phpfpm php bin/magento c:f

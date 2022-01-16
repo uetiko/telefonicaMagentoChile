@@ -1,0 +1,100 @@
+version: '3'
+
+services:
+  db:
+    container_name: magento-mysql
+    image: mysql:${MYSQL_VERSION}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+       - ~/proyectos/database/storage/mysql/57/vass/telefonica/:/var/lib/mysql:rw
+       - ~/personal/Documentos/vass/telefonica/database/sql:/home/sql/
+    ports:
+      - "3306:3306"
+    networks:
+      - my_net_b2c
+  nginx:
+    container_name: magento-nginx
+    tty: true
+    build:
+      context: $PWD/nginx/${NGINX_VERSION}
+    ports:
+      - "80:80"
+    links:
+      - phpfpm
+      - redis:ce
+    volumes:
+      - ~/proyectos/VASS_MagentoWeb_MSS-103/MagentoWeb_web/magento/code:/var/www/html
+      - $PWD/nginx/sock:/sock
+      - $PWD/nginx/log/:/var/log/nginx/:rw
+    networks:
+      my_net_b2c:
+        ipv4_address: ${NGINX_IP}
+  phpfpm:
+    container_name: magento-phpfpm
+    extra_hosts:
+      - ${MOVISTAR_HOST_NAME}:${NGINX_IP}
+    build:
+      context: $PWD/php/${PHP_VERSION}
+    links:
+      - db
+    volumes:
+      - $PWD/php/${PHP_VERSION}/.composer:/var/www/.composer
+      - ~/proyectos/VASS_MagentoWeb_MSS-103/MagentoWeb_web/magento/code:/var/www/html
+      - $PWD/nginx/sock:/sock
+      - ~/proyectos/vass/migracion_telefonica/magento/env.php:/var/www/html/app/etc/env.php:rw
+    networks:
+      - my_net_b2c
+  elasticsearch:
+    container_name: magento-elasticsearch
+    image: elasticsearch:${ELASTICSEARCH_VERSION}
+    restart: always
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 9200:9200
+    volumes:
+      - $PWD/elasticsearch/esdata1:/usr/share/elasticsearch/data
+      - $PWD/elasticsearch/es_log1:/var/log/elasticsearch
+    networks:
+      - my_net_b2c
+
+  rabbitmq:
+    container_name: magento-rabbitmq
+    image: rabbitmq:${RABBITMQ_VERSION}
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - my_net_b2c
+  redis:
+    container_name: magento-redis
+    image: redis:${REDIS_VERSION}
+    restart: on-failure:5
+    ports:
+      - 6379:6379
+    networks:
+      - my_net_b2c
+      
+networks:
+  my_net_b2c:
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.22.0.0/16

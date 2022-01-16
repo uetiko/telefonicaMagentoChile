@@ -1,0 +1,1 @@
+docker exec -it magento-cron php bin/magento cron:run

@@ -1,0 +1,2 @@
+docker exec -it magento-web chown -R app:app . &&
+docker exec -it magento-web chmod u+x bin/magento

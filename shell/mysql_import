@@ -1,0 +1,1 @@
+docker exec -i magento-mysql mysql -h127.0.0.1 -uroot -p123456 $1 < $2

@@ -1,0 +1,1 @@
+docker exec -it magento-phpfpm composer $1 $2 $3

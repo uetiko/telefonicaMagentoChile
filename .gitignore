@@ -1,0 +1,10 @@
+/mysql/data/*
+/elasticsearch/esdata1/*
+/elasticsearch/es_log1/*
+/nginx/log/*
+/magento/code/pub/media/*
+/php/7.4/.composer/cache/*
+!/mysql/data/.gitkeep
+!/elasticsearch/esdata1/.gitkeep
+!/elasticsearch/es_log1/.gitkeep
+!/nginx/log/.gitkeep

@@ -1,0 +1,21 @@
+#docker exec -i magento-phpfpm php bin/magento admin:user:create --admin-user=$1 --admin-password=$2 --admin-email=$3 --admin-firstname=$4 --admin-lastname=$5
+
+echo "¿Configurar usuario de Magento 2.4? s/n"
+read CONFIG_USER
+
+case $CONFIG_USER in
+    "s")
+        echo "¿Configurar usuario de Magento 2.4? s/n"
+        echo "Nombre de administrador: "
+        read USER_NAME
+        echo "$USER_NAME contraseña: "
+        read USER_PASSWORD
+        echo "$USER_NAME email: "
+        read USER_EMAIL
+        echo "$USER_NAME firstname: "
+        read USER_FIRSTNAME
+        echo "$USER_NAME lastname: "
+        read USER_LASTNAME
+        docker exec -it magento-phpfpm php bin/magento admin:user:create --admin-user=$USER_NAME --admin-password=$USER_PASSWORD --admin-email=$USER_EMAIL --admin-firstname=$USER_FIRSTNAME --admin-lastname=$USER_LASTNAME
+        ;;
+esac
