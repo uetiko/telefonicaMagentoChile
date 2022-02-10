@@ -1,4 +1,4 @@
-FROM node:14.18.1-alpine AS node
+FROM node:16.13.2-alpine AS node
 FROM php:7.4-fpm-buster
 
 COPY --from=node /usr/local/bin /usr/local/bin
@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y \
   vim \
   zip \
   wget \
-  zsh \
+  zsh fish \
   gnupg libonig-dev
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
