@@ -1,12 +1,6 @@
-FROM node:16.13.2-alpine AS node
 FROM php:7.4-fpm-buster
 
-COPY --from=node /usr/local/bin /usr/local/bin
-COPY --from=node /usr/local/lib /usr/local/lib
-COPY --from=node /opt /opt
-COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=node /usr/local/bin/node /usr/local/bin/node
-COPY --from=composer:1.10.17 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:1.10.25 /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y \
   cron \
@@ -28,7 +22,8 @@ RUN apt-get update && apt-get install -y \
   zip \
   wget \
   zsh fish \
-  gnupg libonig-dev
+  gnupg libonig-dev \
+  nodejs npm yarn
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
