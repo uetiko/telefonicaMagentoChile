@@ -1,6 +1,10 @@
+FROM node:16.15.0 AS node
 FROM php:7.4-fpm-buster
 
-COPY --from=composer:1.10.25 /usr/bin/composer /usr/bin/composer
+COPY --from=node /usr/local/bin /usr/local/bin
+COPY --from=node /usr/local/lib /usr/local/lib
+COPY --from=node /opt /opt
+COPY --from=composer:1.10.26 /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y \
   cron \
@@ -58,11 +62,10 @@ RUN cd /tmp \
   && rm ioncube_loaders_lin_x86-64.tar.gz \
   && docker-php-ext-enable ioncube
 
-RUN pecl channel-update pecl.php.net \
-  && pecl install xdebug
+RUN pecl channel-update pecl.php.net
+RUN pecl install xdebug
 
-RUN docker-php-ext-enable xdebug \
-  && sed -i -e 's/^zend_extension/\;zend_extension/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN docker-php-ext-enable xdebug 
 
 RUN groupadd -g 1000 app \
  && useradd -g 1000 -u 1000 -d /var/www -s /bin/zsh app
@@ -86,4 +89,5 @@ VOLUME /var/www
 WORKDIR /var/www/html
 
 EXPOSE 9001
+EXPOSE 9003
 ENV XDEBUG_PORT 9003

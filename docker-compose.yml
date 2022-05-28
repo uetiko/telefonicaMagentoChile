@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
   db:
@@ -10,7 +10,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-       - ~/proyectos/database/storage/mysql/57/vass/telefonica/:/var/lib/mysql:rw
+       - ~/work/database/storage/mysql/57/vass/telefonica/:/var/lib/mysql:rw
        - ~/personal/Documentos/vass/telefonica/database/sql:/home/sql/
     ports:
       - "3306:3306"
@@ -27,7 +27,7 @@ services:
       - phpfpm
       - redis:ce
     volumes:
-      - ~/proyectos/VASS_MagentoWeb_MSS-103/MagentoWeb_web/magento/code:/var/www/html
+      - ~/work/VASS_MagentoWeb_MSS-103/MagentoWeb_web/magento/code:/var/www/html
       - $PWD/nginx/sock:/sock
       - $PWD/nginx/log/:/var/log/nginx/:rw
     networks:
@@ -43,9 +43,10 @@ services:
       - db
     volumes:
       - $PWD/php/${PHP_VERSION}/.composer:/var/www/.composer
-      - ~/proyectos/VASS_MagentoWeb_MSS-103/MagentoWeb_web/magento/code:/var/www/html
+      - ~/work/VASS_MagentoWeb_MSS-103/MagentoWeb_web/magento/code:/var/www/html
       - $PWD/nginx/sock:/sock
-      - ~/proyectos/vass/migracion_telefonica/magento/env.php:/var/www/html/app/etc/env.php:rw
+      - ~/work/vass/migracion_telefonica/magento/env.php:/var/www/html/app/etc/env.php:rw
+      - ./php/7.4/php.ini:/etc/php/7.4/fpm/php.ini
     networks:
       - my_net_b2c
   elasticsearch:
