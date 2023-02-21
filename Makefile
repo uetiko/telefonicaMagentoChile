@@ -4,6 +4,7 @@ D_SERVICE_FPM=magento-phpfpm
 
 build:
 	$(D_COMPOSE) build
+	docker build -f php/7.4/Dockerfile --tag=dev ./php/7.4/
 
 up:
 	$(D_COMPOSE) up -d
@@ -38,6 +39,9 @@ cache:
 logs:
 	$(D_EXEC) $(D_SERVICE_FPM) ./deploy-compile.sh logs
 
+reindex:
+	$(D_EXEC) $(D_SERVICE_FPM) ./deploy-compile.sh reindex
+
 stats: up
 	docker stats
 
@@ -50,3 +54,9 @@ compile-partial:
 
 stats: up
 	docker stats
+	
+into-container:
+	$(D_EXEC) $(D_SERVICE_FPM) fish
+
+cron:
+	$(D_EXEC) $(D_SERVICE_FPM) ./deploy-compile.sh cron

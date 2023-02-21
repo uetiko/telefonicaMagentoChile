@@ -1,4 +1,4 @@
-FROM node:16.15.0 AS node
+FROM node:16.17.0 AS node
 FROM php:7.4-fpm-buster
 
 COPY --from=node /usr/local/bin /usr/local/bin
@@ -29,6 +29,10 @@ RUN apt-get update && apt-get install -y \
   gnupg libonig-dev \
   nodejs npm yarn
 
+RUN pecl install apcu
+
+RUN docker-php-ext-enable apcu
+
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
 RUN docker-php-ext-install \
@@ -52,18 +56,8 @@ RUN docker-php-ext-install \
   xsl \
   zip
 
-RUN cd /tmp \
-  && curl -O https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
-  && tar zxvf ioncube_loaders_lin_x86-64.tar.gz \
-  && export PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") \
-  && export PHP_EXT_DIR=$(php-config --extension-dir) \
-  && cp "./ioncube/ioncube_loader_lin_${PHP_VERSION}.so" "${PHP_EXT_DIR}/ioncube.so" \
-  && rm -rf ./ioncube \
-  && rm ioncube_loaders_lin_x86-64.tar.gz \
-  && docker-php-ext-enable ioncube
-
 RUN pecl channel-update pecl.php.net
-RUN pecl install xdebug
+RUN pecl install xdebug-3.1.6
 
 RUN docker-php-ext-enable xdebug 
 
@@ -81,6 +75,8 @@ COPY bin/cronstart /usr/local/bin/
 
 RUN mkdir -p /etc/nginx/html /var/www/html /sock \
   && chown -R app:app /etc/nginx /var/www /usr/local/etc/php/conf.d /sock
+
+RUN chown -R 1000:1000 /var/www/html
 
 USER app:app
 

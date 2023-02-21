@@ -20,9 +20,10 @@ services:
     container_name: magento-nginx
     tty: true
     build:
-      context: $PWD/nginx/${NGINX_VERSION}
+      context: $PWD/nginx/1.19
     ports:
       - "80:80"
+      - "8080:80"
     links:
       - phpfpm
       - redis:ce
@@ -35,10 +36,10 @@ services:
         ipv4_address: ${NGINX_IP}
   phpfpm:
     container_name: magento-phpfpm
+    hostname: magento-phpfpm
     extra_hosts:
       - ${MOVISTAR_HOST_NAME}:${NGINX_IP}
-    build:
-      context: $PWD/php/${PHP_VERSION}
+    image: dev:latest
     links:
       - db
     volumes:
@@ -75,6 +76,7 @@ services:
 
   rabbitmq:
     container_name: magento-rabbitmq
+    hostname: magento-rabbitmq
     image: rabbitmq:${RABBITMQ_VERSION}
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
